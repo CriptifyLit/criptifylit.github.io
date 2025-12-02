@@ -12,14 +12,14 @@
     --text-primary: #ffffff;
     --text-secondary: #a1a1aa;
     
-    /* Accents - Neon Purple/Blue Gradient */
-    --accent-primary: #8b5cf6; /* Violet */
-    --accent-secondary: #3b82f6; /* Blue */
-    --accent-glow: rgba(139, 92, 246, 0.5);
+    /* Accents - Electric Blue/Cyan Gradient */
+    --accent-primary: #0061ff;
+    --accent-secondary: #60efff;
+    --accent-glow: rgba(0, 97, 255, 0.5);
     
     /* Gradients */
-    --gradient-text: linear-gradient(to right, #c4b5fd, #8b5cf6, #3b82f6);
-    --gradient-bg: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
+    --gradient-text: linear-gradient(to right, #60efff, #0061ff);
+    --gradient-bg: linear-gradient(135deg, rgba(0, 97, 255, 0.1), rgba(96, 239, 255, 0.1));
     
     /* Spacing & Layout */
     --container-width: 1200px;
