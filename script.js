@@ -1,9 +1,109 @@
 /**
  * Gagan Shiva Kumara Portfolio
- * Features: Terminal Landing Page, Snake Game, Custom Cursor, Animations, Sound Effects
+ * Features: Terminal Landing Page, Snake Game, Custom Cursor, Animations, Sound Effects, Particles
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    
+    // ===== PARTICLE BACKGROUND SYSTEM =====
+    const particleCanvas = document.getElementById('particle-canvas');
+    let particles = [];
+    let particleAnimationId;
+    
+    function initParticles() {
+        if (!particleCanvas) return;
+        
+        const ctx = particleCanvas.getContext('2d');
+        
+        function resizeCanvas() {
+            particleCanvas.width = window.innerWidth;
+            particleCanvas.height = window.innerHeight;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Particle class
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            
+            reset() {
+                this.x = Math.random() * particleCanvas.width;
+                this.y = Math.random() * particleCanvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.color = Math.random() > 0.5 ? '#0061ff' : '#60efff';
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                // Wrap around screen
+                if (this.x < 0) this.x = particleCanvas.width;
+                if (this.x > particleCanvas.width) this.x = 0;
+                if (this.y < 0) this.y = particleCanvas.height;
+                if (this.y > particleCanvas.height) this.y = 0;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // Create particles
+        const particleCount = Math.min(100, Math.floor((window.innerWidth * window.innerHeight) / 15000));
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+        
+        // Draw connections between nearby particles
+        function drawConnections() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = '#0061ff';
+                        ctx.globalAlpha = 0.1 * (1 - distance / 150);
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                        ctx.globalAlpha = 1;
+                    }
+                }
+            }
+        }
+        
+        // Animation loop
+        function animateParticles() {
+            ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+            
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            
+            drawConnections();
+            
+            particleAnimationId = requestAnimationFrame(animateParticles);
+        }
+        
+        animateParticles();
+    }
     
     // ===== SOUND SYSTEM =====
     let audioContext = null;
@@ -621,6 +721,9 @@ Type <span class="command">'start'</span> to enter the website directly
         terminalOverlay.classList.add('hidden');
         mainContent.classList.remove('hidden');
         
+        // Initialize particle background
+        initParticles();
+        
         // Re-initialize cursor hover effects for main content
         setTimeout(() => {
             const interactiveElements = document.querySelectorAll('a, button, input, textarea, .clickable, .nav-link, .btn, .social-icon');
@@ -632,6 +735,10 @@ Type <span class="command">'start'</span> to enter the website directly
                 el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
                 el.addEventListener('click', () => SoundFX.click());
             });
+            
+            // Trigger initial scroll animations
+            const fadeElements = document.querySelectorAll('.fade-on-scroll, .slide-left, .slide-right, .scale-up');
+            fadeElements.forEach(el => observer.observe(el));
         }, 100);
     }
     
