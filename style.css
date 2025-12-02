@@ -959,7 +959,7 @@ img {
     overflow: visible;
 }
 
-/* Animated gradient border for about text box */
+/* Animated gradient border for about text box - only on hover */
 .about-text::before {
     content: '';
     position: absolute;
@@ -971,8 +971,13 @@ img {
     background-size: 300% 100%;
     border-radius: calc(var(--border-radius) + 2px);
     z-index: -1;
-    opacity: 0.3;
+    opacity: 0;
     animation: gradientFlow 4s ease infinite;
+    transition: opacity 0.4s ease;
+}
+
+.about-text:hover::before {
+    opacity: 0.3;
 }
 
 .about-text p {
@@ -991,6 +996,9 @@ img {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 30px;
+    max-width: 900px;
+    margin: 0 auto;
+    justify-content: center;
 }
 
 .skill-card {
