@@ -5,25 +5,47 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     
-    // ===== PARTICLE BACKGROUND SYSTEM =====
+    // ===== PARTICLE BACKGROUND SYSTEM (Hero Only with Cursor Physics) =====
     const particleCanvas = document.getElementById('particle-canvas');
     let particles = [];
     let particleAnimationId;
+    
+    // Mouse position for cursor interaction
+    let mouse = {
+        x: null,
+        y: null,
+        radius: 150 // Interaction radius
+    };
     
     function initParticles() {
         if (!particleCanvas) return;
         
         const ctx = particleCanvas.getContext('2d');
+        const heroSection = document.getElementById('hero');
         
         function resizeCanvas() {
-            particleCanvas.width = window.innerWidth;
-            particleCanvas.height = window.innerHeight;
+            if (heroSection) {
+                particleCanvas.width = heroSection.offsetWidth;
+                particleCanvas.height = heroSection.offsetHeight;
+            }
         }
         
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
         
-        // Particle class
+        // Track mouse position relative to hero section
+        heroSection.addEventListener('mousemove', (e) => {
+            const rect = heroSection.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+        
+        heroSection.addEventListener('mouseleave', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+        
+        // Particle class with physics
         class Particle {
             constructor() {
                 this.reset();
@@ -32,22 +54,62 @@ document.addEventListener('DOMContentLoaded', () => {
             reset() {
                 this.x = Math.random() * particleCanvas.width;
                 this.y = Math.random() * particleCanvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = (Math.random() - 0.5) * 0.5;
-                this.speedY = (Math.random() - 0.5) * 0.5;
-                this.opacity = Math.random() * 0.5 + 0.2;
-                this.color = Math.random() > 0.5 ? '#0061ff' : '#60efff';
+                this.baseX = this.x; // Original position
+                this.baseY = this.y;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.speedY = (Math.random() - 0.5) * 0.3;
+                this.density = (Math.random() * 30) + 1; // For push strength
+                // Black and white colors
+                const brightness = Math.random();
+                if (brightness > 0.7) {
+                    this.color = '#ffffff';
+                    this.opacity = Math.random() * 0.8 + 0.2;
+                } else if (brightness > 0.4) {
+                    this.color = '#aaaaaa';
+                    this.opacity = Math.random() * 0.6 + 0.2;
+                } else {
+                    this.color = '#666666';
+                    this.opacity = Math.random() * 0.5 + 0.2;
+                }
             }
             
             update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
+                // Check mouse position and create push effect
+                if (mouse.x !== null && mouse.y !== null) {
+                    const dx = mouse.x - this.x;
+                    const dy = mouse.y - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < mouse.radius) {
+                        // Calculate push force (stronger when closer)
+                        const forceDirectionX = dx / distance;
+                        const forceDirectionY = dy / distance;
+                        const force = (mouse.radius - distance) / mouse.radius;
+                        const directionX = forceDirectionX * force * this.density * 0.6;
+                        const directionY = forceDirectionY * force * this.density * 0.6;
+                        
+                        // Push particle away from cursor
+                        this.x -= directionX;
+                        this.y -= directionY;
+                    }
+                }
                 
-                // Wrap around screen
-                if (this.x < 0) this.x = particleCanvas.width;
-                if (this.x > particleCanvas.width) this.x = 0;
-                if (this.y < 0) this.y = particleCanvas.height;
-                if (this.y > particleCanvas.height) this.y = 0;
+                // Slowly return to original position (spring effect)
+                const dxBase = this.baseX - this.x;
+                const dyBase = this.baseY - this.y;
+                this.x += dxBase * 0.02;
+                this.y += dyBase * 0.02;
+                
+                // Add subtle drift
+                this.baseX += this.speedX;
+                this.baseY += this.speedY;
+                
+                // Wrap around screen for base position
+                if (this.baseX < 0) this.baseX = particleCanvas.width;
+                if (this.baseX > particleCanvas.width) this.baseX = 0;
+                if (this.baseY < 0) this.baseY = particleCanvas.height;
+                if (this.baseY > particleCanvas.height) this.baseY = 0;
             }
             
             draw() {
@@ -61,12 +123,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Create particles
-        const particleCount = Math.min(100, Math.floor((window.innerWidth * window.innerHeight) / 15000));
+        particles = []; // Reset particles array
+        const particleCount = Math.min(120, Math.floor((particleCanvas.width * particleCanvas.height) / 10000));
         for (let i = 0; i < particleCount; i++) {
             particles.push(new Particle());
         }
         
-        // Draw connections between nearby particles
+        // Draw connections between nearby particles (white/gray lines)
         function drawConnections() {
             for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {
@@ -74,13 +137,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     const dy = particles[i].y - particles[j].y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
                     
-                    if (distance < 150) {
+                    if (distance < 120) {
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.strokeStyle = '#0061ff';
-                        ctx.globalAlpha = 0.1 * (1 - distance / 150);
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.globalAlpha = 0.15 * (1 - distance / 120);
                         ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                        ctx.globalAlpha = 1;
+                    }
+                }
+            }
+            
+            // Draw connections to mouse cursor
+            if (mouse.x !== null && mouse.y !== null) {
+                for (let i = 0; i < particles.length; i++) {
+                    const dx = mouse.x - particles[i].x;
+                    const dy = mouse.y - particles[i].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < mouse.radius) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.globalAlpha = 0.2 * (1 - distance / mouse.radius);
+                        ctx.lineWidth = 0.8;
                         ctx.stroke();
                         ctx.globalAlpha = 1;
                     }
