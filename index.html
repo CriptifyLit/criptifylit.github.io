@@ -6,23 +6,60 @@
     <title>Gagan Shiva Kumara | Software Engineer & Tech Leader</title>
     <meta name="description" content="Portfolio of Gagan Shiva Kumara - Emerging Software Engineer, Founder of Hackabyte, Lead Facilitator @ Steamoji, Economics & Data Science Student">
     
-    <!-- Google Fonts: Inter -->
+    <!-- Google Fonts: Inter + Fira Code for Terminal -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
     
-    <!-- Font Awesome for Icons (Optional, using CDN) -->
+    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+    <div class="cursor-trail"></div>
+
+    <!-- Terminal Overlay -->
+    <div id="terminal-overlay" class="terminal-overlay">
+        <div class="terminal-container">
+            <div class="terminal-header">
+                <div class="terminal-buttons">
+                    <span class="terminal-btn red"></span>
+                    <span class="terminal-btn yellow"></span>
+                    <span class="terminal-btn green"></span>
+                </div>
+                <span class="terminal-title">gagan@portfolio:~</span>
+            </div>
+            <div class="terminal-body">
+                <div id="terminal-output" class="terminal-output"></div>
+                <div class="terminal-input-line">
+                    <span class="terminal-prompt">visitor@gsk:~$</span>
+                    <input type="text" id="terminal-input" class="terminal-input" autofocus autocomplete="off">
+                    <span class="terminal-cursor"></span>
+                </div>
+            </div>
+        </div>
+        <!-- Snake Game Container (hidden until game starts) -->
+        <div id="snake-game-container" class="snake-game-container hidden">
+            <div class="snake-header">
+                <span class="snake-title">🐍 SNAKE GAME</span>
+                <span id="snake-score" class="snake-score">Score: 0 / 5</span>
+            </div>
+            <canvas id="snake-canvas" width="400" height="400"></canvas>
+            <p class="snake-instructions">Use Arrow Keys or WASD to move. Reach 5 points to enter!</p>
+        </div>
+    </div>
+
+    <!-- Main Website Content (hidden until terminal completes) -->
+    <div id="main-content" class="main-content hidden">
 
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
-            <a href="#hero" class="logo">Gagan<span class="accent">Shiva Kumara</span>.</a>
+            <a href="#hero" class="logo">Gagan <span class="accent">Shiva Kumara</span>.</a>
             <div class="menu-toggle" id="mobile-menu">
                 <span class="bar"></span>
                 <span class="bar"></span>
@@ -256,8 +293,7 @@
                     <p class="contact-details"><i class="fa-solid fa-location-dot"></i> 15791 Bear Creek Pkwy, Redmond, WA 98052</p>
                     <div class="social-links">
                         <a href="https://www.linkedin.com/in/gaganshivakumara/" target="_blank" class="social-icon"><i class="fa-brands fa-linkedin"></i></a>
-                        <a href="#" class="social-icon"><i class="fa-brands fa-github"></i></a>
-                        <a href="#" class="social-icon"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="https://github.com/CriptifyLit" target="_blank" class="social-icon"><i class="fa-brands fa-github"></i></a>
                         <a href="mailto:rhsgaganshivakumara@gmail.com" class="social-icon"><i class="fa-solid fa-envelope"></i></a>
                     </div>
                 </div>
@@ -287,6 +323,8 @@
             <p class="footer-note">Designed & Built with <i class="fa-solid fa-heart accent"></i></p>
         </div>
     </footer>
+
+    </div> <!-- End of main-content wrapper -->
 
     <!-- Custom JS -->
     <script src="script.js"></script>

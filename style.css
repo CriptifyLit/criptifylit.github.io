@@ -1,6 +1,7 @@
 /* 
     Theme: Dark Modern Portfolio
     Inspired by: Grok, Blok.so, Lapz.io
+    Features: Terminal Landing, Snake Game, Custom Cursor
 */
 
 :root {
@@ -29,6 +30,238 @@
     /* Transitions */
     --transition-fast: 0.2s ease;
     --transition-medium: 0.3s ease;
+}
+
+/* ===== CUSTOM CURSOR ===== */
+.custom-cursor {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--accent-secondary);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 10000;
+    transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+    transform: translate(-50%, -50%);
+    mix-blend-mode: difference;
+}
+
+.custom-cursor.hover {
+    transform: translate(-50%, -50%) scale(1.5);
+    background-color: rgba(96, 239, 255, 0.3);
+    border-color: var(--accent-primary);
+}
+
+.cursor-trail {
+    width: 8px;
+    height: 8px;
+    background: var(--accent-primary);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.08s ease;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px var(--accent-primary), 0 0 20px var(--accent-secondary);
+}
+
+/* Hide default cursor */
+body {
+    cursor: none;
+}
+
+a, button, input, textarea, .clickable {
+    cursor: none;
+}
+
+/* ===== TERMINAL OVERLAY ===== */
+.terminal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.terminal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(1.1);
+}
+
+.terminal-container {
+    width: 90%;
+    max-width: 800px;
+    background: #111;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 50px rgba(0, 97, 255, 0.3), 0 0 100px rgba(96, 239, 255, 0.1);
+    border: 1px solid rgba(96, 239, 255, 0.2);
+}
+
+.terminal-header {
+    background: #1a1a1a;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.terminal-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.terminal-btn {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.terminal-btn.red { background: #ff5f56; }
+.terminal-btn.yellow { background: #ffbd2e; }
+.terminal-btn.green { background: #27ca40; }
+
+.terminal-title {
+    color: var(--text-secondary);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+}
+
+.terminal-body {
+    padding: 20px;
+    min-height: 400px;
+    max-height: 500px;
+    overflow-y: auto;
+    font-family: 'Fira Code', monospace;
+}
+
+.terminal-output {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.terminal-output .command {
+    color: var(--accent-secondary);
+}
+
+.terminal-output .response {
+    color: #a1a1aa;
+}
+
+.terminal-output .highlight {
+    color: var(--accent-primary);
+    text-shadow: 0 0 10px var(--accent-primary);
+}
+
+.terminal-output .ascii-art {
+    color: var(--accent-secondary);
+    text-shadow: 0 0 5px var(--accent-secondary);
+    font-size: 0.7rem;
+    line-height: 1.2;
+}
+
+.terminal-input-line {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.terminal-prompt {
+    color: var(--accent-secondary);
+    margin-right: 10px;
+    text-shadow: 0 0 10px var(--accent-secondary);
+}
+
+.terminal-input {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.95rem;
+    flex: 1;
+    outline: none;
+    caret-color: var(--accent-secondary);
+}
+
+.terminal-cursor {
+    width: 10px;
+    height: 20px;
+    background: var(--accent-secondary);
+    animation: blink 1s step-end infinite;
+    box-shadow: 0 0 10px var(--accent-secondary);
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+/* ===== SNAKE GAME ===== */
+.snake-game-container {
+    text-align: center;
+    margin-top: 30px;
+    transition: opacity 0.5s ease;
+}
+
+.snake-game-container.hidden {
+    display: none;
+}
+
+.snake-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 0 10px;
+}
+
+.snake-title {
+    font-family: 'Fira Code', monospace;
+    font-size: 1.2rem;
+    color: var(--accent-secondary);
+    text-shadow: 0 0 10px var(--accent-secondary);
+}
+
+.snake-score {
+    font-family: 'Fira Code', monospace;
+    font-size: 1.1rem;
+    color: var(--accent-primary);
+    text-shadow: 0 0 10px var(--accent-primary);
+}
+
+#snake-canvas {
+    background: #111;
+    border: 2px solid var(--accent-secondary);
+    border-radius: 5px;
+    box-shadow: 0 0 30px rgba(0, 97, 255, 0.3);
+}
+
+.snake-instructions {
+    margin-top: 15px;
+    color: var(--text-secondary);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+    transition: opacity 0.8s ease;
+}
+
+.main-content.hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* Reset & Base Styles */
@@ -142,7 +375,7 @@ img {
 }
 
 .btn-outline:hover {
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(0, 97, 255, 0.1);
     border-color: var(--accent-secondary);
 }
 
@@ -628,7 +861,7 @@ img {
 .award-icon {
     width: 80px;
     height: 80px;
-    background: rgba(139, 92, 246, 0.1);
+    background: rgba(0, 97, 255, 0.1);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -742,4 +975,13 @@ img {
     .btn-outline { margin-left: 0; }
     
     .contact-wrapper { padding: 30px; }
+    
+    /* Terminal responsive */
+    .terminal-container { width: 95%; }
+    .terminal-body { min-height: 300px; padding: 15px; }
+    #snake-canvas { width: 300px; height: 300px; }
+    
+    /* Hide custom cursor on mobile/touch */
+    .custom-cursor, .cursor-trail { display: none; }
+    body { cursor: auto; }
 }

@@ -1,19 +1,411 @@
+/**
+ * Gagan Shiva Kumara Portfolio
+ * Features: Terminal Landing Page, Snake Game, Custom Cursor, Animations
+ */
+
 document.addEventListener('DOMContentLoaded', () => {
+    
+    // ===== CUSTOM CURSOR =====
+    const cursor = document.querySelector('.custom-cursor');
+    const cursorTrail = document.querySelector('.cursor-trail');
+    
+    if (cursor && cursorTrail) {
+        let mouseX = 0, mouseY = 0;
+        let trailX = 0, trailY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+        });
+        
+        // Smooth trail animation
+        function animateTrail() {
+            trailX += (mouseX - trailX) * 0.15;
+            trailY += (mouseY - trailY) * 0.15;
+            cursorTrail.style.left = trailX + 'px';
+            cursorTrail.style.top = trailY + 'px';
+            requestAnimationFrame(animateTrail);
+        }
+        animateTrail();
+        
+        // Hover effect on interactive elements
+        const interactiveElements = document.querySelectorAll('a, button, input, textarea, .clickable, .nav-link, .btn, .social-icon');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+    }
+    
+    // ===== TERMINAL LANDING PAGE =====
+    const terminalOverlay = document.getElementById('terminal-overlay');
+    const terminalOutput = document.getElementById('terminal-output');
+    const terminalInput = document.getElementById('terminal-input');
+    const mainContent = document.getElementById('main-content');
+    const snakeGameContainer = document.getElementById('snake-game-container');
+    
+    // ASCII Art for GSK
+    const asciiArt = `
+ ██████╗ ███████╗██╗  ██╗
+██╔════╝ ██╔════╝██║ ██╔╝
+██║  ███╗███████╗█████╔╝ 
+██║   ██║╚════██║██╔═██╗ 
+╚██████╔╝███████║██║  ██╗
+ ╚═════╝ ╚══════╝╚═╝  ╚═╝`;
+    
+    // Terminal command history
+    let commandHistory = [];
+    let historyIndex = -1;
+    
+    // Available commands
+    const commands = {
+        help: () => `
+<span class="highlight">Available Commands:</span>
+  <span class="command">help</span>      - Show this help message
+  <span class="command">about</span>     - Learn about Gagan
+  <span class="command">skills</span>    - View technical skills
+  <span class="command">contact</span>   - Get contact information
+  <span class="command">play</span>      - Start the Snake Game
+  <span class="command">start</span>     - Enter the portfolio website
+  <span class="command">clear</span>     - Clear the terminal
+  <span class="command">ls</span>        - List available sections
+  <span class="command">cat</span>       - Read a file (try: cat about.txt)
+`,
+        about: () => `
+<span class="highlight">About Gagan Shiva Kumara:</span>
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+Emerging Software Engineer & Technology Leader
+Founder of Hackabyte | Lead Facilitator @ Steamoji
+Economics & Data Science @ Bellevue College
+
+Passionate about AI, software engineering, and building
+impactful solutions at the intersection of tech and innovation.
+`,
+        skills: () => `
+<span class="highlight">Technical Skills:</span>
+━━━━━━━━━━━━━━━━━━━━
+▸ Python, C++, JavaScript
+▸ AI & Data Science
+▸ Web Development
+▸ Robotics & Arduino
+▸ CAD & 3D Printing
+▸ UI/UX Design (Figma)
+`,
+        contact: () => `
+<span class="highlight">Contact Information:</span>
+━━━━━━━━━━━━━━━━━━━━━━
+📧 Email: rhsgaganshivakumara@gmail.com
+🔗 LinkedIn: linkedin.com/in/gaganshivakumara
+💻 GitHub: github.com/CriptifyLit
+`,
+        ls: () => `
+<span class="command">about.txt</span>    <span class="command">skills.txt</span>    <span class="command">projects/</span>
+<span class="command">contact.txt</span>  <span class="command">education/</span>    <span class="command">awards/</span>
+`,
+        clear: () => {
+            terminalOutput.innerHTML = '';
+            return '';
+        },
+        play: () => {
+            setTimeout(() => {
+                document.querySelector('.terminal-container').style.display = 'none';
+                snakeGameContainer.classList.remove('hidden');
+                initSnakeGame();
+            }, 500);
+            return '<span class="highlight">Starting Snake Game...</span>\nReach 5 points to enter the website!';
+        },
+        start: () => {
+            setTimeout(() => enterWebsite(), 1000);
+            return '<span class="highlight">Launching portfolio...</span>';
+        }
+    };
+    
+    // Handle cat command
+    function handleCat(args) {
+        const files = {
+            'about.txt': commands.about(),
+            'skills.txt': commands.skills(),
+            'contact.txt': commands.contact()
+        };
+        if (args.length === 0) return '<span class="response">Usage: cat &lt;filename&gt;</span>';
+        const filename = args[0];
+        return files[filename] || `<span class="response">cat: ${filename}: No such file</span>`;
+    }
+    
+    // Typewriter effect
+    function typeWriter(element, text, speed = 30, callback) {
+        let i = 0;
+        element.innerHTML = '';
+        function type() {
+            if (i < text.length) {
+                if (text.substr(i, 1) === '<') {
+                    // Handle HTML tags
+                    const closeTag = text.indexOf('>', i);
+                    element.innerHTML += text.substring(i, closeTag + 1);
+                    i = closeTag + 1;
+                } else {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                }
+                setTimeout(type, speed);
+            } else if (callback) {
+                callback();
+            }
+        }
+        type();
+    }
+    
+    // Initial terminal welcome message
+    function showWelcome() {
+        const welcomeText = `<span class="ascii-art">${asciiArt}</span>
+
+<span class="highlight">Welcome to Gagan Shiva Kumara's Portfolio Terminal</span>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Type <span class="command">'help'</span> to see available commands
+Type <span class="command">'play'</span> to start the Snake Game
+Type <span class="command">'start'</span> to enter the website directly
+
+`;
+        typeWriter(terminalOutput, welcomeText, 5, () => {
+            terminalInput.focus();
+        });
+    }
+    
+    // Process terminal command
+    function processCommand(input) {
+        const [cmd, ...args] = input.toLowerCase().trim().split(' ');
+        
+        if (cmd === '') return '';
+        
+        commandHistory.push(input);
+        historyIndex = commandHistory.length;
+        
+        if (cmd === 'cat') return handleCat(args);
+        if (commands[cmd]) return commands[cmd]();
+        
+        return `<span class="response">Command not found: ${cmd}. Type 'help' for available commands.</span>`;
+    }
+    
+    // Handle terminal input
+    if (terminalInput) {
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const input = terminalInput.value;
+                const output = processCommand(input);
+                
+                // Add command to output
+                terminalOutput.innerHTML += `\n<span class="command">visitor@gsk:~$</span> ${input}\n${output}`;
+                terminalOutput.scrollTop = terminalOutput.scrollHeight;
+                terminalInput.value = '';
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    terminalInput.value = commandHistory[historyIndex];
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    terminalInput.value = commandHistory[historyIndex];
+                } else {
+                    historyIndex = commandHistory.length;
+                    terminalInput.value = '';
+                }
+            }
+        });
+        
+        showWelcome();
+    }
+    
+    // ===== SNAKE GAME =====
+    function initSnakeGame() {
+        const canvas = document.getElementById('snake-canvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('snake-score');
+        
+        const gridSize = 20;
+        const tileCount = canvas.width / gridSize;
+        
+        let snake = [{ x: 10, y: 10 }];
+        let food = { x: 15, y: 15 };
+        let dx = 0, dy = 0;
+        let score = 0;
+        const targetScore = 5;
+        let gameLoop;
+        let gameSpeed = 150;
+        
+        // Color cycling
+        let colorHue = 200;
+        
+        function drawGame() {
+            // Clear canvas
+            ctx.fillStyle = '#111';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid (subtle)
+            ctx.strokeStyle = 'rgba(96, 239, 255, 0.1)';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= tileCount; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * gridSize, 0);
+                ctx.lineTo(i * gridSize, canvas.height);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, i * gridSize);
+                ctx.lineTo(canvas.width, i * gridSize);
+                ctx.stroke();
+            }
+            
+            // Update color hue for cycling effect
+            colorHue = (colorHue + 0.5) % 360;
+            const snakeColor = `hsl(${colorHue}, 100%, 60%)`;
+            
+            // Draw snake with glow
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = snakeColor;
+            snake.forEach((segment, index) => {
+                const alpha = 1 - (index / snake.length) * 0.5;
+                ctx.fillStyle = index === 0 ? '#60efff' : `rgba(0, 97, 255, ${alpha})`;
+                ctx.fillRect(segment.x * gridSize + 2, segment.y * gridSize + 2, gridSize - 4, gridSize - 4);
+            });
+            
+            // Draw food with pulsing glow
+            ctx.shadowColor = '#ff6b6b';
+            ctx.shadowBlur = 20 + Math.sin(Date.now() / 200) * 5;
+            ctx.fillStyle = '#ff6b6b';
+            ctx.beginPath();
+            ctx.arc(food.x * gridSize + gridSize/2, food.y * gridSize + gridSize/2, gridSize/2 - 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+        
+        function moveSnake() {
+            if (dx === 0 && dy === 0) return;
+            
+            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+            
+            // Wall collision - wrap around
+            if (head.x < 0) head.x = tileCount - 1;
+            if (head.x >= tileCount) head.x = 0;
+            if (head.y < 0) head.y = tileCount - 1;
+            if (head.y >= tileCount) head.y = 0;
+            
+            // Self collision
+            if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+                resetGame();
+                return;
+            }
+            
+            snake.unshift(head);
+            
+            // Check food collision
+            if (head.x === food.x && head.y === food.y) {
+                score++;
+                scoreDisplay.textContent = `Score: ${score} / ${targetScore}`;
+                
+                if (score >= targetScore) {
+                    clearInterval(gameLoop);
+                    setTimeout(() => enterWebsite(), 1000);
+                    return;
+                }
+                
+                // New food position
+                do {
+                    food = {
+                        x: Math.floor(Math.random() * tileCount),
+                        y: Math.floor(Math.random() * tileCount)
+                    };
+                } while (snake.some(segment => segment.x === food.x && segment.y === food.y));
+                
+                // Speed up slightly
+                clearInterval(gameLoop);
+                gameSpeed = Math.max(80, gameSpeed - 5);
+                gameLoop = setInterval(gameUpdate, gameSpeed);
+            } else {
+                snake.pop();
+            }
+        }
+        
+        function resetGame() {
+            snake = [{ x: 10, y: 10 }];
+            dx = 0;
+            dy = 0;
+            score = 0;
+            scoreDisplay.textContent = `Score: ${score} / ${targetScore}`;
+            gameSpeed = 150;
+            clearInterval(gameLoop);
+            gameLoop = setInterval(gameUpdate, gameSpeed);
+        }
+        
+        function gameUpdate() {
+            moveSnake();
+            drawGame();
+        }
+        
+        // Controls
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowUp': case 'w': case 'W':
+                    if (dy !== 1) { dx = 0; dy = -1; }
+                    e.preventDefault();
+                    break;
+                case 'ArrowDown': case 's': case 'S':
+                    if (dy !== -1) { dx = 0; dy = 1; }
+                    e.preventDefault();
+                    break;
+                case 'ArrowLeft': case 'a': case 'A':
+                    if (dx !== 1) { dx = -1; dy = 0; }
+                    e.preventDefault();
+                    break;
+                case 'ArrowRight': case 'd': case 'D':
+                    if (dx !== -1) { dx = 1; dy = 0; }
+                    e.preventDefault();
+                    break;
+            }
+        });
+        
+        // Start game
+        gameLoop = setInterval(gameUpdate, gameSpeed);
+        drawGame();
+    }
+    
+    // ===== ENTER WEBSITE =====
+    function enterWebsite() {
+        terminalOverlay.classList.add('hidden');
+        mainContent.classList.remove('hidden');
+        
+        // Re-initialize cursor hover effects for main content
+        setTimeout(() => {
+            const interactiveElements = document.querySelectorAll('a, button, input, textarea, .clickable, .nav-link, .btn, .social-icon');
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+                el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+            });
+        }, 100);
+    }
+    
+    // ===== MAIN WEBSITE FUNCTIONALITY =====
+    
     // Mobile Menu Toggle
     const mobileMenu = document.getElementById('mobile-menu');
     const navMenu = document.querySelector('.nav-menu');
     const navLinks = document.querySelectorAll('.nav-link');
 
-    mobileMenu.addEventListener('click', () => {
-        mobileMenu.classList.toggle('active');
-        navMenu.classList.toggle('active');
-    });
+    if (mobileMenu) {
+        mobileMenu.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+    }
 
     // Close mobile menu when a link is clicked
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
-            mobileMenu.classList.remove('active');
-            navMenu.classList.remove('active');
+            if (mobileMenu) mobileMenu.classList.remove('active');
+            if (navMenu) navMenu.classList.remove('active');
         });
     });
 
@@ -25,7 +417,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const targetElement = document.querySelector(targetId);
 
             if (targetElement) {
-                // Calculate header height for offset
                 const headerOffset = 80;
                 const elementPosition = targetElement.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
@@ -49,7 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
-                observer.unobserve(entry.target); // Only animate once
+                observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
@@ -59,13 +450,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Navbar Background Change on Scroll
     const navbar = document.querySelector('.navbar');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            navbar.style.background = 'rgba(13, 13, 13, 0.95)';
-            navbar.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
-        } else {
-            navbar.style.background = 'rgba(13, 13, 13, 0.8)';
-            navbar.style.boxShadow = 'none';
-        }
-    });
+    if (navbar) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(13, 13, 13, 0.95)';
+                navbar.style.boxShadow = '0 2px 10px rgba(0,0,0,0.3)';
+            } else {
+                navbar.style.background = 'rgba(13, 13, 13, 0.8)';
+                navbar.style.boxShadow = 'none';
+            }
+        });
+    }
 });
