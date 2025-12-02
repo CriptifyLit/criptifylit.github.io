@@ -997,12 +997,12 @@ img {
 
 /* Skills Section */
 .skills-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 30px;
     max-width: 900px;
     margin: 0 auto;
-    justify-content: center;
 }
 
 .skill-card {
@@ -1014,6 +1014,8 @@ img {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    width: 150px;
+    flex-shrink: 0;
 }
 
 .skill-card::before {
