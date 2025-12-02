@@ -951,6 +951,22 @@ Type <span class="command">'start'</span> to enter the website directly
         });
     }
 
+    // ===== SCROLL PROGRESS BAR =====
+    const scrollProgressBar = document.getElementById('scroll-progress');
+    
+    function updateScrollProgress() {
+        if (!scrollProgressBar) return;
+        
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrollPercent = (scrollTop / scrollHeight) * 100;
+        
+        scrollProgressBar.style.width = scrollPercent + '%';
+    }
+    
+    window.addEventListener('scroll', updateScrollProgress);
+    updateScrollProgress(); // Initial call
+
     // ===== SEATTLE TIME & WEATHER WIDGET =====
     function updateSeattleTime() {
         const timeEl = document.getElementById('seattle-time');

@@ -112,6 +112,40 @@ a, button, input, textarea, .clickable, .btn, .btn-primary, .btn-outline, .socia
     cursor: none !important;
 }
 
+/* ===== SCROLL PROGRESS BAR ===== */
+.scroll-progress-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 10001;
+}
+
+.scroll-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, 
+        #60efff 0%, 
+        #0061ff 25%, 
+        #60efff 50%, 
+        #0061ff 75%, 
+        #60efff 100%);
+    background-size: 200% 100%;
+    animation: progressGradient 3s linear infinite;
+    box-shadow: 
+        0 0 10px rgba(96, 239, 255, 0.7),
+        0 0 20px rgba(0, 97, 255, 0.5),
+        0 0 30px rgba(96, 239, 255, 0.3);
+    transition: width 0.1s ease-out;
+}
+
+@keyframes progressGradient {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
 /* ===== SOUND TOGGLE BUTTON ===== */
 .sound-toggle {
     position: fixed;
@@ -606,6 +640,12 @@ img {
     font-family: 'Fira Code', monospace;
     font-size: 0.8rem;
     box-shadow: 0 0 20px rgba(0, 97, 255, 0.1);
+}
+
+/* Hero section widget styling */
+.status-widget.hero-widget {
+    margin-top: 40px;
+    justify-content: center;
 }
 
 .live-indicator {
@@ -1458,9 +1498,6 @@ img {
     }
 
     .nav-menu.active { right: 0; }
-    
-    /* Hide status widget on mobile */
-    .status-widget { display: none; }
     
     /* Logo text always visible on mobile */
     .logo-text {
