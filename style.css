@@ -70,14 +70,18 @@ body {
     cursor: none;
 }
 
-a, button, input, textarea, .clickable {
-    cursor: none;
+*, *::before, *::after {
+    cursor: none !important;
+}
+
+a, button, input, textarea, .clickable, .btn, .btn-primary, .btn-outline, .social-icon, .nav-link, .project-link {
+    cursor: none !important;
 }
 
 /* ===== SOUND TOGGLE BUTTON ===== */
 .sound-toggle {
     position: fixed;
-    top: 20px;
+    bottom: 20px;
     right: 20px;
     width: 45px;
     height: 45px;
@@ -91,7 +95,7 @@ a, button, input, textarea, .clickable {
     justify-content: center;
     z-index: 9500;
     transition: var(--transition-medium);
-    cursor: none;
+    cursor: none !important;
 }
 
 .sound-toggle:hover {
@@ -795,6 +799,37 @@ img {
     outline: none;
     border-color: var(--accent-primary);
     background: rgba(0, 0, 0, 0.4);
+}
+
+/* Form Status Message */
+.form-status {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+    display: none;
+}
+
+.form-status.success {
+    display: block;
+    background: rgba(39, 202, 64, 0.2);
+    color: #27ca40;
+    border: 1px solid #27ca40;
+}
+
+.form-status.error {
+    display: block;
+    background: rgba(255, 95, 86, 0.2);
+    color: #ff5f56;
+    border: 1px solid #ff5f56;
+}
+
+.form-status.loading {
+    display: block;
+    background: rgba(0, 97, 255, 0.2);
+    color: var(--accent-secondary);
+    border: 1px solid var(--accent-secondary);
 }
 
 /* Footer */

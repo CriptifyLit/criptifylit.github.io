@@ -301,7 +301,11 @@
                         <a href="mailto:rhsgaganshivakumara@gmail.com" class="social-icon"><i class="fa-solid fa-envelope"></i></a>
                     </div>
                 </div>
-                <form class="contact-form fade-on-scroll">
+                <form class="contact-form fade-on-scroll" id="contact-form" action="https://api.web3forms.com/submit" method="POST">
+                    <input type="hidden" name="access_key" value="862130de-dbd9-4297-a0e6-604faf9a53d8">
+                    <input type="hidden" name="subject" value="New Contact from Portfolio Website">
+                    <input type="hidden" name="from_name" value="Portfolio Contact Form">
+                    <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
                     <div class="form-group">
                         <label for="name">Name</label>
                         <input type="text" id="name" name="name" placeholder="Your Name" required>
@@ -314,7 +318,8 @@
                         <label for="message">Message</label>
                         <textarea id="message" name="message" rows="5" placeholder="Your Message" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
+                    <button type="submit" class="btn btn-primary" id="submit-btn">Send Message</button>
+                    <p id="form-status" class="form-status"></p>
                 </form>
             </div>
         </div>

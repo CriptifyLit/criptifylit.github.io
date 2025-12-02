@@ -709,4 +709,55 @@ Type <span class="command">'start'</span> to enter the website directly
             }
         });
     }
+
+    // ===== CONTACT FORM HANDLING =====
+    const contactForm = document.getElementById('contact-form');
+    const formStatus = document.getElementById('form-status');
+    const submitBtn = document.getElementById('submit-btn');
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+            formStatus.className = 'form-status loading';
+            formStatus.textContent = 'Sending your message...';
+            
+            const formData = new FormData(contactForm);
+            
+            try {
+                const response = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    SoundFX.win();
+                    formStatus.className = 'form-status success';
+                    formStatus.textContent = '✓ Message sent successfully! I\'ll get back to you soon.';
+                    contactForm.reset();
+                } else {
+                    throw new Error(data.message || 'Something went wrong');
+                }
+            } catch (error) {
+                SoundFX.collision();
+                formStatus.className = 'form-status error';
+                formStatus.textContent = '✗ Failed to send message. Please try again or email directly.';
+                console.error('Form submission error:', error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Message';
+                
+                // Hide status after 5 seconds
+                setTimeout(() => {
+                    formStatus.className = 'form-status';
+                    formStatus.textContent = '';
+                }, 5000);
+            }
+        });
+    }
 });
